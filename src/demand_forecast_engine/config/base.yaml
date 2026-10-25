@@ -1,0 +1,137 @@
+# =========================
+# Global configuration
+# =========================
+
+project:
+  name: demand_forecast_engine
+  environment: dev            # dev | staging | prod
+  random_seed: 42
+
+# =========================
+# Data configuration
+# =========================
+
+data:
+  date_col: Date
+  target_col: Demand
+  
+  filter:
+     Region: "North"
+     Category: "Electronics"
+     Store ID: "S001"
+     Product ID: "P0001"
+
+  hierarchy:
+    - Region
+    - Category
+    - Product ID
+    - Store ID
+
+  frequency: D                # D (daily) | W (weekly) | M (monthly)
+
+  train_test_split:
+    method: time_based
+    train_cut_off_date: "2023-11-30"
+    forecast_horizon: 12      # number of periods to forecast
+
+# =========================
+# Feature engineering
+# =========================
+
+features:
+  
+  numeric:
+   - Price
+   - Competitor Pricing
+   - Inventory Level
+   - Units Sold
+   - Units Ordered
+  
+  categorical:
+   - Discount
+   - Seasonality 
+   - Epidemic
+   - Promotion
+   - Weather Condition
+
+  exclude:
+    - Date 
+    - Demand
+    - Store ID
+    - Product ID 
+    - Category 
+    - Region  
+  
+  lags:
+    enabled: true
+    values: [1, 2, 4, 8, 12]
+
+  rolling:
+    enabled: true
+    windows: [4, 8, 12]
+    statistics: ["mean", "std"]
+
+  hierarchical:
+    enabled: true
+
+    store_level: true
+    product_level: true
+    category_level: true
+    region_level: true
+
+  price_features:
+    enabled: true
+    include_relative_price: true
+    include_price_change: true
+
+# =========================
+# Model selection
+# =========================
+
+model:
+  type: lightgbm               # lightgbm | prophet | xgboost
+  objective: regression
+  evaluation_metric: wape
+
+# =========================
+# Prophet-specific config
+# =========================
+
+prophet:
+  yearly_seasonality: true
+  weekly_seasonality: false
+  daily_seasonality: false
+  changepoint_prior_scale: 0.05
+  seasonality_mode: additive
+
+# =========================
+# LightGBM-specific config
+# =========================
+
+lightgbm:
+  num_leaves: 64
+  learning_rate: 0.05
+  n_estimators: 500
+  max_depth: -1
+  subsample: 0.8
+  colsample_bytree: 0.8
+
+# =========================
+# Evaluation
+# =========================
+
+evaluation:
+  metrics: ["mape", "wape", "smape"]
+  by_hierarchy:
+    - Category
+    - Region
+
+# =========================
+# Output paths
+# =========================
+
+paths:
+  data_dir: data/
+  model_dir: outputs/models/
+  forecast_dir: outputs/forecasts/
+  report_dir: outputs/reports/
