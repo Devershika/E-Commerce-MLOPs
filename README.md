@@ -119,9 +119,3 @@ df=data.read_data() "
 
 ## Contributing
 Feel free to open issues or submit pull requests!
-
-## Authors
-This project was developed by:
-
-- Devershika Mohane
-- Harsh Dhiman
