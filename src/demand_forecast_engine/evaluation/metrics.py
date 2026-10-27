@@ -1,4 +1,19 @@
 import numpy as np
+from sklearn.metrics import mean_absolute_percentage_error as sklearn_mape
+from sklearn.metrics import r2_score as sklearn_r2_score
+
+
+def mean_absolute_percentage_error(y_true, y_pred):
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    return float(sklearn_mape(y_true, y_pred))
+
+
+def r2_score(y_true, y_pred):
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    return float(sklearn_r2_score(y_true, y_pred))
+
 
 class ForecastingMetrics:
     """

@@ -1,0 +1,1111 @@
+{
+  "model": "Holt-Winters (Fine-Tuned)",
+  "series_evaluated": 100,
+  "summary": {
+    "mean_mape": 0.6176357472046692,
+    "mean_r2": -0.2979132795838677,
+    "max_mape": 1.3643827393415233
+  },
+  "results": [
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0008"
+      },
+      "MAPE": 0.31394192137584537,
+      "R2": -0.01228115071553737,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0020"
+      },
+      "MAPE": 0.2854048821296009,
+      "R2": -0.2809385020305577,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0002"
+      },
+      "MAPE": 0.36232798701809404,
+      "R2": -0.0888842929520599,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0003"
+      },
+      "MAPE": 0.44798772072897763,
+      "R2": -0.45939094500527733,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0009"
+      },
+      "MAPE": 0.32584516086287235,
+      "R2": -0.32679168055809793,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0018"
+      },
+      "MAPE": 0.3635869498771726,
+      "R2": -0.05523392257500026,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0006"
+      },
+      "MAPE": 0.3884667919872689,
+      "R2": -0.05826410074127786,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0015"
+      },
+      "MAPE": 0.33377324358559707,
+      "R2": -0.23711668677793107,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0016"
+      },
+      "MAPE": 0.3207440061585174,
+      "R2": -0.7773261759411156,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0018"
+      },
+      "MAPE": 0.33980639526936945,
+      "R2": -0.02889433760693283,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0019"
+      },
+      "MAPE": 0.29878461904503534,
+      "R2": -0.4323261608011404,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0005"
+      },
+      "MAPE": 0.3369335562410919,
+      "R2": -0.17510683112933978,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0009"
+      },
+      "MAPE": 0.3282776102984618,
+      "R2": -0.12704006421578562,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0011"
+      },
+      "MAPE": 0.35766662121462794,
+      "R2": -0.28277587302276896,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0017"
+      },
+      "MAPE": 0.32659358553533974,
+      "R2": -0.2492642222940764,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Clothing",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0019"
+      },
+      "MAPE": 0.357425822047382,
+      "R2": -0.14999868022256924,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0003"
+      },
+      "MAPE": 0.5310745433365102,
+      "R2": -0.024837041539246485,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0011"
+      },
+      "MAPE": 0.4215703124241248,
+      "R2": -0.02421554363144618,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0016"
+      },
+      "MAPE": 0.4064411182462771,
+      "R2": -0.1032079408379305,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0001"
+      },
+      "MAPE": 0.5323809776593819,
+      "R2": -0.1273750446859414,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0004"
+      },
+      "MAPE": 0.559293763948185,
+      "R2": -0.148649238261767,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0008"
+      },
+      "MAPE": 0.6236675933780859,
+      "R2": -0.4999434379559975,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0002"
+      },
+      "MAPE": 0.562652590876783,
+      "R2": -0.281993384659057,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0011"
+      },
+      "MAPE": 0.7440478062680296,
+      "R2": -0.16489067693898374,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0005"
+      },
+      "MAPE": 0.4376957447340884,
+      "R2": -0.09371637314534631,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0012"
+      },
+      "MAPE": 0.4359917044219993,
+      "R2": -0.06400410442989757,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0014"
+      },
+      "MAPE": 0.43948606060128587,
+      "R2": -0.04105033803130764,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Electronics",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0012"
+      },
+      "MAPE": 0.4547208686005034,
+      "R2": -0.007300919466634692,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0012"
+      },
+      "MAPE": 0.4842618614626118,
+      "R2": -0.017427860949382312,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0017"
+      },
+      "MAPE": 0.5975184112360864,
+      "R2": -0.020385094939006976,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0018"
+      },
+      "MAPE": 0.5297752522917961,
+      "R2": -0.00028927843772419415,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0010"
+      },
+      "MAPE": 0.5172912115803294,
+      "R2": -0.04109051591275659,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0011"
+      },
+      "MAPE": 0.5830630066874513,
+      "R2": -0.05323050875993918,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0019"
+      },
+      "MAPE": 0.7436607091890316,
+      "R2": -0.19313957639569446,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0020"
+      },
+      "MAPE": 0.5147074949247434,
+      "R2": -0.011692474208639725,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0012"
+      },
+      "MAPE": 0.6370338534883725,
+      "R2": -0.027434760452614393,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0014"
+      },
+      "MAPE": 0.4514662254778643,
+      "R2": -0.05688577545170759,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0019"
+      },
+      "MAPE": 0.7062167103750627,
+      "R2": -0.27370093433059917,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0020"
+      },
+      "MAPE": 0.597375920265292,
+      "R2": -0.11383946226733843,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0003"
+      },
+      "MAPE": 0.4667159012190986,
+      "R2": -0.2845297294170981,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0008"
+      },
+      "MAPE": 0.6472329981820595,
+      "R2": -0.06402517296625643,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0014"
+      },
+      "MAPE": 0.572844179259093,
+      "R2": -0.09025502513231554,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0015"
+      },
+      "MAPE": 0.573036770872682,
+      "R2": -0.039252165972699204,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0016"
+      },
+      "MAPE": 0.479832308357548,
+      "R2": -0.04698527587767143,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0018"
+      },
+      "MAPE": 0.5391218328678559,
+      "R2": -0.04255285352356952,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Furniture",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0020"
+      },
+      "MAPE": 0.5740424467308314,
+      "R2": -0.016735753693158273,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0002"
+      },
+      "MAPE": 0.5597240320038721,
+      "R2": -0.3840141700287707,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0004"
+      },
+      "MAPE": 0.7730131594091706,
+      "R2": -1.176865999203844,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0007"
+      },
+      "MAPE": 0.6102295929392701,
+      "R2": -0.43704311395754214,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0009"
+      },
+      "MAPE": 0.6995328434344663,
+      "R2": -0.3134970050933876,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0010"
+      },
+      "MAPE": 0.89982879476246,
+      "R2": -0.681605215686302,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0013"
+      },
+      "MAPE": 0.6333929990649868,
+      "R2": -0.7940541210957781,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0014"
+      },
+      "MAPE": 0.5033456745560764,
+      "R2": -0.29427523391283117,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0015"
+      },
+      "MAPE": 0.8001453300414925,
+      "R2": -1.5410750120622825,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0019"
+      },
+      "MAPE": 0.7543535326630774,
+      "R2": -0.5142922515295207,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0005"
+      },
+      "MAPE": 0.6094592164337552,
+      "R2": -0.5981366389686453,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0007"
+      },
+      "MAPE": 0.7392161449928416,
+      "R2": -0.7512345561507385,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0012"
+      },
+      "MAPE": 0.5480619179023002,
+      "R2": -0.2445400062901275,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0014"
+      },
+      "MAPE": 0.635462177726113,
+      "R2": -0.04654767475744692,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0016"
+      },
+      "MAPE": 0.31449161258226666,
+      "R2": -0.5630692972972569,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0018"
+      },
+      "MAPE": 0.8698536747134414,
+      "R2": -1.4064265134168754,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0001"
+      },
+      "MAPE": 0.7392695209947464,
+      "R2": -0.3632473176079498,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0004"
+      },
+      "MAPE": 0.5898736602627125,
+      "R2": -0.7643657252777649,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0005"
+      },
+      "MAPE": 0.5364283140865218,
+      "R2": -0.36329471874138775,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0006"
+      },
+      "MAPE": 0.5262373951051191,
+      "R2": -0.3658918697638742,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0007"
+      },
+      "MAPE": 0.6780508323733238,
+      "R2": -0.8428263647606384,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0008"
+      },
+      "MAPE": 0.46531143223128196,
+      "R2": -0.055583564753559855,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0009"
+      },
+      "MAPE": 0.445968785248194,
+      "R2": -0.03028255937102431,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0010"
+      },
+      "MAPE": 0.617437348503856,
+      "R2": -0.3424894200576747,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0013"
+      },
+      "MAPE": 0.531540286425596,
+      "R2": -0.2878823626898319,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0015"
+      },
+      "MAPE": 0.44710430258541867,
+      "R2": -0.10083008493739842,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0001"
+      },
+      "MAPE": 0.9661913499139222,
+      "R2": -1.0319252125755982,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0003"
+      },
+      "MAPE": 0.8474905921238919,
+      "R2": -0.6247669469246908,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0004"
+      },
+      "MAPE": 0.7378857042447059,
+      "R2": -0.8495580309641682,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0008"
+      },
+      "MAPE": 0.4237862117246481,
+      "R2": -0.11447140693613767,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0009"
+      },
+      "MAPE": 0.5236302740333144,
+      "R2": -0.320466995109818,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0010"
+      },
+      "MAPE": 0.44022908645407294,
+      "R2": -0.11730561963992647,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0011"
+      },
+      "MAPE": 0.5363258780039716,
+      "R2": -0.3277248972908875,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0013"
+      },
+      "MAPE": 0.8914519718944438,
+      "R2": -1.1486487560000542,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0001"
+      },
+      "MAPE": 0.7694070772359124,
+      "R2": -0.32035355796847464,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0002"
+      },
+      "MAPE": 0.9865217140992272,
+      "R2": -1.2690774336937003,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0004"
+      },
+      "MAPE": 0.8394381812169813,
+      "R2": -0.7743035530814226,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0006"
+      },
+      "MAPE": 0.5061643348255315,
+      "R2": -0.21029423456406704,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0007"
+      },
+      "MAPE": 0.6648759775497561,
+      "R2": -0.2820998819222482,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0010"
+      },
+      "MAPE": 0.5505755544978727,
+      "R2": -0.180548362342005,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Groceries",
+        "Region": "West",
+        "Store ID": "S004",
+        "Product ID": "P0013"
+      },
+      "MAPE": 0.9474834461428453,
+      "R2": -0.3544226689719172,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0001"
+      },
+      "MAPE": 0.9339226173584935,
+      "R2": -0.08251751620374859,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0005"
+      },
+      "MAPE": 0.8793421432985928,
+      "R2": -0.003437005697835449,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "East",
+        "Store ID": "S003",
+        "Product ID": "P0006"
+      },
+      "MAPE": 1.2002378641142684,
+      "R2": -0.3796262937374828,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0006"
+      },
+      "MAPE": 0.7771229036202574,
+      "R2": -0.174140967418013,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0013"
+      },
+      "MAPE": 1.0949732693917906,
+      "R2": -0.606848031529331,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0015"
+      },
+      "MAPE": 0.9943022000206083,
+      "R2": -0.033641819962784814,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S001",
+        "Product ID": "P0017"
+      },
+      "MAPE": 1.3643827393415233,
+      "R2": -0.2674541671619082,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0003"
+      },
+      "MAPE": 0.7354209480767185,
+      "R2": 0.010402160836558871,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0016"
+      },
+      "MAPE": 1.1729633942921516,
+      "R2": -0.14995473657049052,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0017"
+      },
+      "MAPE": 1.0792892377575065,
+      "R2": -0.019550716776179256,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "North",
+        "Store ID": "S005",
+        "Product ID": "P0020"
+      },
+      "MAPE": 0.8691384551417175,
+      "R2": -0.1285012818715554,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0002"
+      },
+      "MAPE": 0.8108600513935796,
+      "R2": -0.007557735467652815,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0007"
+      },
+      "MAPE": 0.8389506687766921,
+      "R2": -0.0070111162228019275,
+      "sample_count": 152
+    },
+    {
+      "group": {
+        "Category": "Toys",
+        "Region": "South",
+        "Store ID": "S002",
+        "Product ID": "P0017"
+      },
+      "MAPE": 1.0020912405412468,
+      "R2": -0.03588048634477636,
+      "sample_count": 152
+    }
+  ]
+}
