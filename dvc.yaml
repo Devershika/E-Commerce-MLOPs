@@ -1,0 +1,34 @@
+stages:
+  preprocess:
+    cmd: python preprocess.py
+    deps:
+      - preprocess.py
+      - src/demand_forecast_engine/utils.py
+      - src/demand_forecast_engine/preprocessing/clean.py
+      - Data/sales_data.csv
+    params:
+      - data
+      - preprocess
+      - paths.raw_data
+      - paths.clean_data
+    outs:
+      - Data/interim/clean.parquet
+
+  feature_engineer:
+    cmd: python feature_engineer.py
+    deps:
+      - feature_engineer.py
+      - src/demand_forecast_engine/utils.py
+      - src/demand_forecast_engine/feature_engineering/features.py
+      - Data/interim/clean.parquet
+    params:
+      - data
+      - features
+      - paths.clean_data
+      - paths.train_data
+      - paths.test_data
+      - paths.category_maps
+    outs:
+      - Data/processed/train.parquet
+      - Data/processed/test.parquet
+      - Data/processed/category_maps.json

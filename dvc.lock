@@ -1,0 +1,129 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python preprocess.py
+    deps:
+    - path: Data/sales_data.csv
+      hash: md5
+      md5: 7e35ffc6c173aede0f80ffde6369386a
+      size: 6343418
+    - path: preprocess.py
+      hash: md5
+      md5: 930c5cbdee21e19196fa286f988d31a1
+      size: 2357
+    - path: src/demand_forecast_engine/preprocessing/clean.py
+      hash: md5
+      md5: 94a8d14c984edf5a13f3ba5fdc467226
+      size: 2818
+    - path: src/demand_forecast_engine/utils.py
+      hash: md5
+      md5: e386510a30b6e5ac2fcea4b991cb2973
+      size: 305
+    params:
+      params.yaml:
+        data:
+          date_col: Date
+          date_format: '%d-%m-%Y'
+          target_col: Demand
+          group_cols:
+          - Store ID
+          - Product ID
+          - Category
+          - Region
+        paths.clean_data: Data/interim/clean.parquet
+        paths.raw_data: Data/sales_data.csv
+        preprocess:
+          ffill_cols:
+          - Demand
+          log1p_cols:
+          - Demand
+    outs:
+    - path: Data/interim/clean.parquet
+      hash: md5
+      md5: acae49881c917ac310160135cc3f3056
+      size: 915469
+  feature_engineer:
+    cmd: python feature_engineer.py
+    deps:
+    - path: Data/interim/clean.parquet
+      hash: md5
+      md5: acae49881c917ac310160135cc3f3056
+      size: 915469
+    - path: feature_engineer.py
+      hash: md5
+      md5: 9fbd78e9f67952a69f5306243840feb1
+      size: 4325
+    - path: src/demand_forecast_engine/feature_engineering/features.py
+      hash: md5
+      md5: 4dc4ba789225cc121c32b905e854c510
+      size: 4335
+    - path: src/demand_forecast_engine/utils.py
+      hash: md5
+      md5: e386510a30b6e5ac2fcea4b991cb2973
+      size: 305
+    params:
+      params.yaml:
+        data:
+          date_col: Date
+          date_format: '%d-%m-%Y'
+          target_col: Demand
+          group_cols:
+          - Store ID
+          - Product ID
+          - Category
+          - Region
+        features:
+          target_col: Demand_log1p
+          train_cutoff_date: '2023-11-30'
+          calendar:
+          - day
+          - month
+          - week
+          - dayofweek
+          - year
+          - quarter
+          - is_weekend
+          lag_cols:
+          - Demand_log1p
+          - Units Sold
+          - Inventory Level
+          - Price
+          lags:
+          - 1
+          - 7
+          - 14
+          - 28
+          rolling_cols:
+          - Demand_log1p
+          rolling_windows:
+          - 7
+          - 14
+          - 28
+          rolling_stats:
+          - mean
+          - std
+          encode_cols:
+          - Weather Condition
+          - Seasonality
+          drop_cols:
+          - Demand
+          - Units Sold
+          - Units Ordered
+          - Inventory Level
+        paths.category_maps: Data/processed/category_maps.json
+        paths.clean_data: Data/interim/clean.parquet
+        paths.test_data: Data/processed/test.parquet
+        paths.train_data: Data/processed/train.parquet
+    outs:
+    - path: Data/processed/category_maps.json
+      hash: md5
+      md5: 200f4cd9ca3b8c4a77b3a03090646372
+      size: 200
+    - path: Data/processed/test.parquet
+      hash: md5
+      md5: 5c654195adda629beb93a8e8e87d249e
+      size: 695613
+    - path: Data/processed/train.parquet
+      hash: md5
+      md5: 634ceceb9e36aee547f64523896caa73
+      size: 6352133
