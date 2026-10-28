@@ -6,18 +6,36 @@ so running them before the train/test split does not leak test information.
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Sequence
 
 import numpy as np
 import pandas as pd
 
+from demand_forecast_engine.utils import DataValidationError
+
 log = logging.getLogger(__name__)
 
 
-def load_raw(path, date_col: str = "Date", date_format: str = "%d-%m-%Y") -> pd.DataFrame:
-    """Read the raw CSV and parse the date column."""
-    df = pd.read_csv(path)
-    df[date_col] = pd.to_datetime(df[date_col], format=date_format)
+def load_raw(path) -> pd.DataFrame:
+    """Read the raw CSV as it is. Dates are parsed later, after the schema check."""
+    if not Path(path).exists():
+        raise FileNotFoundError(path)
+    return pd.read_csv(path)
+
+
+def parse_dates(df: pd.DataFrame, date_col: str, date_format: str) -> pd.DataFrame:
+    """Parse the date column, failing with examples of the values that do not match."""
+    parsed = pd.to_datetime(df[date_col], format=date_format, errors="coerce")
+    bad = parsed.isna()
+    if bad.any():
+        examples = list(df.loc[bad, date_col].astype(str).unique()[:3])
+        raise DataValidationError(
+            f"Column '{date_col}': {int(bad.sum())} value(s) are empty or do not match the "
+            f"format '{date_format}', e.g. {examples}"
+        )
+    df = df.copy()
+    df[date_col] = parsed
     return df
 
 
@@ -63,13 +81,3 @@ def add_log1p(df: pd.DataFrame, cols: Sequence[str]) -> pd.DataFrame:
             raise ValueError(f"Column '{col}' has negative values, log1p is not valid")
         df[f"{col}_log1p"] = np.log1p(df[col])
     return df
-
-
-def check_regular_frequency(df: pd.DataFrame, group_cols: Sequence[str], date_col: str = "Date") -> int:
-    """Warn if any series has missing days. Lags are row-based, so they assume daily rows."""
-    span = df.groupby(list(group_cols))[date_col].agg(["min", "max", "count"])
-    expected = (span["max"] - span["min"]).dt.days + 1
-    n_gaps = int((expected != span["count"]).sum())
-    if n_gaps:
-        log.warning("%d series have missing days, lag features will be shifted for them", n_gaps)
-    return n_gaps

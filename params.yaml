@@ -1,6 +1,7 @@
-# Parameters for the data pipeline (Issue #2).
-# Edit values here, or override a few of them on the command line (see --help).
+# Parameters for the data pipeline. Edit values here, or override a few on the command line.
 # Paths are relative to the repository root.
+# dvc.yaml lists exactly which keys each stage reads, so changing a value here
+# re-runs only the stages that use it.
 
 paths:
   raw_data: Data/sales_data.csv
@@ -12,28 +13,43 @@ paths:
 data:
   date_col: Date
   date_format: "%d-%m-%Y"
-  target_col: Demand            # raw target, must exist in the CSV
+  target_col: Demand                 # raw target, must exist in the CSV
   group_cols: [Store ID, Product ID, Category, Region]   # one time series per combination
 
+# Expected raw columns and their kinds. preprocess.py fails with a clear message if
+# a column is missing or has the wrong type.
+schema:
+  date: [Date]
+  string: [Store ID, Product ID, Category, Region, Weather Condition, Seasonality]
+  numeric: [Inventory Level, Units Sold, Units Ordered, Price, Discount, Promotion,
+            Competitor Pricing, Epidemic, Demand]
+
 preprocess:
-  ffill_cols: [Demand]      # forward-filled within each series (past values only)
-  log1p_cols: [Demand]      # creates <col>_log1p, the original column is kept
+  ffill_cols: [Demand]               # forward-filled within each series (past values only)
+  log1p_cols: [Demand]               # creates <col>_log1p, the original column is kept
+  max_null_fraction: 0.05            # share of missing values allowed in ffill_cols before filling
+  require_continuous_dates: true     # fail if a series has missing or repeated days
 
 features:
+  test_ratio: 0.08                   # last 8% of calendar days become the test set (by time)
+  train_cutoff_date: null            # set a date (YYYY-MM-DD) to use it instead of test_ratio
   target_col: Demand_log1p
-  train_cutoff_date: "2023-11-30"    # train: Date <= cutoff, test: Date > cutoff
 
   calendar: [day, month, week, dayofweek, year, quarter, is_weekend]
 
   lag_cols: [Demand_log1p, Units Sold, Inventory Level, Price]
-  lags: [1, 7, 14, 28]
+  lag_days: [1, 7]
 
   rolling_cols: [Demand_log1p]       # windows are computed on values shifted by 1 day
   rolling_windows: [7, 14, 28]
   rolling_stats: [mean, std]
 
-  encode_cols: [Weather Condition, Seasonality]   # category codes are learned on train only
+  categorical_features: [Weather Condition, Seasonality]   # codes are learned on train only
 
   # Dropped AFTER the lag features are built. These are only known once the day
   # has happened (same-day sales/orders/stock), so using them would leak the target.
   drop_cols: [Demand, Units Sold, Units Ordered, Inventory Level]
+
+model:
+  seasonal_periods: 7                # daily data with a weekly cycle. Holt-Winters needs 2 full cycles
+                                     # per series, which feature_engineer.py checks.
