@@ -5,9 +5,14 @@ stages:
       - preprocess.py
       - src/demand_forecast_engine/utils.py
       - src/demand_forecast_engine/preprocessing/clean.py
+      - src/demand_forecast_engine/preprocessing/validate.py
       - Data/sales_data.csv
     params:
-      - data
+      - data.date_col
+      - data.date_format
+      - data.target_col
+      - data.group_cols
+      - schema
       - preprocess
       - paths.raw_data
       - paths.clean_data
@@ -19,11 +24,14 @@ stages:
     deps:
       - feature_engineer.py
       - src/demand_forecast_engine/utils.py
+      - src/demand_forecast_engine/preprocessing/validate.py
       - src/demand_forecast_engine/feature_engineering/features.py
       - Data/interim/clean.parquet
     params:
-      - data
+      - data.date_col
+      - data.group_cols
       - features
+      - model.seasonal_periods
       - paths.clean_data
       - paths.train_data
       - paths.test_data
