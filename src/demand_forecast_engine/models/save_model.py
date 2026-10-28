@@ -8,19 +8,25 @@ import pandas as pd
 from demand_forecast_engine.models.holt_winters import HoltWintersForecaster
 
 
-def load_sales_data(csv_path: str) -> pd.DataFrame:
-    df = pd.read_csv(csv_path)
+def load_sales_data(data_path: str) -> pd.DataFrame:
+    path = Path(data_path)
+    if path.suffix.lower() == ".parquet":
+        df = pd.read_parquet(path)
+    else:
+        df = pd.read_csv(path)
+
     if "Date" not in df.columns:
         raise ValueError("Expected a 'Date' column in the input dataset.")
     if "Demand" not in df.columns:
         raise ValueError("Expected a 'Demand' column in the input dataset.")
+
     df["Date"] = pd.to_datetime(df["Date"], format="mixed", dayfirst=True)
     return df.sort_values("Date").reset_index(drop=True)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train and save a Holt-Winters demand forecast model.")
-    parser.add_argument("--input", default="Data/sales_data.csv", help="CSV input file containing date and demand columns.")
+    parser.add_argument("--input", default="Data/sales_data.csv", help="CSV or parquet input file containing date and demand columns.")
     parser.add_argument("--output", default="models/holt_winters_model.joblib", help="Destination for the serialized model bundle.")
     parser.add_argument("--group-by", nargs="*", default=["Category", "Region", "Store ID", "Product ID"], help="Columns used to group the series.")
     parser.add_argument("--seasonal-periods", type=int, default=7, help="Seasonal period used by Holt-Winters.")

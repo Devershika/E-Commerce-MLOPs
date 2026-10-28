@@ -1,55 +1,32 @@
-# Parameters for the data pipeline. Edit values here, or override a few on the command line.
-# Paths are relative to the repository root.
-# dvc.yaml lists exactly which keys each stage reads, so changing a value here
-# re-runs only the stages that use it.
+# Parameters for the DVC pipeline and Holt-Winters model.
+# Use a single canonical path layout aligned with the project dataset.
 
 paths:
   raw_data: Data/sales_data.csv
-  clean_data: Data/interim/clean.parquet
+  processed_dir: Data/processed
   train_data: Data/processed/train.parquet
   test_data: Data/processed/test.parquet
-  category_maps: Data/processed/category_maps.json
 
+# Input dataset contract
 data:
   date_col: Date
   date_format: "%d-%m-%Y"
-  target_col: Demand                 # raw target, must exist in the CSV
-  group_cols: [Store ID, Product ID, Category, Region]   # one time series per combination
+  target_col: Demand
+  id_cols: ["Store ID", "Product ID", "Category", "Region"]
+  group_cols: ["Store ID", "Product ID", "Category", "Region"]
+  test_ratio: 0.2
 
-# Expected raw columns and their kinds. preprocess.py fails with a clear message if
-# a column is missing or has the wrong type.
-schema:
-  date: [Date]
-  string: [Store ID, Product ID, Category, Region, Weather Condition, Seasonality]
-  numeric: [Inventory Level, Units Sold, Units Ordered, Price, Discount, Promotion,
-            Competitor Pricing, Epidemic, Demand]
-
+# Preprocessing settings
 preprocess:
-  ffill_cols: [Demand]               # forward-filled within each series (past values only)
-  log1p_cols: [Demand]               # creates <col>_log1p, the original column is kept
-  max_null_fraction: 0.05            # share of missing values allowed in ffill_cols before filling
-  require_continuous_dates: true     # fail if a series has missing or repeated days
+  ffill_cols: [Demand]
+  log1p_cols: [Demand]
+  max_null_fraction: 0.05
+  require_continuous_dates: true
 
-features:
-  test_ratio: 0.08                   # last 8% of calendar days become the test set (by time)
-  train_cutoff_date: null            # set a date (YYYY-MM-DD) to use it instead of test_ratio
-  target_col: Demand_log1p
-
-  calendar: [day, month, week, dayofweek, year, quarter, is_weekend]
-
-  lag_cols: [Demand_log1p, Units Sold, Inventory Level, Price]
-  lag_days: [1, 7]
-
-  rolling_cols: [Demand_log1p]       # windows are computed on values shifted by 1 day
-  rolling_windows: [7, 14, 28]
-  rolling_stats: [mean, std]
-
-  categorical_features: [Weather Condition, Seasonality]   # codes are learned on train only
-
-  # Dropped AFTER the lag features are built. These are only known once the day
-  # has happened (same-day sales/orders/stock), so using them would leak the target.
-  drop_cols: [Demand, Units Sold, Units Ordered, Inventory Level]
-
+# Model tuning settings used by the Holt-Winters stage
 model:
-  seasonal_periods: 7                # daily data with a weekly cycle. Holt-Winters needs 2 full cycles
-                                     # per series, which feature_engineer.py checks.
+  trend: add
+  seasonal: add
+  seasonal_periods: 7
+  use_log: true
+  horizon: 14

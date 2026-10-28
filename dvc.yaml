@@ -1,42 +1,36 @@
 stages:
   preprocess:
-    cmd: python preprocess.py
+    cmd: python scripts/preprocess_data.py --input Data/sales_data.csv --output Data/processed --test-ratio 0.2
     deps:
-      - preprocess.py
-      - src/demand_forecast_engine/utils.py
-      - src/demand_forecast_engine/preprocessing/clean.py
-      - src/demand_forecast_engine/preprocessing/validate.py
       - Data/sales_data.csv
+      - scripts/preprocess_data.py
     params:
-      - data.date_col
-      - data.date_format
-      - data.target_col
-      - data.group_cols
-      - schema
-      - preprocess
-      - paths.raw_data
-      - paths.clean_data
-    outs:
-      - Data/interim/clean.parquet
-
-  feature_engineer:
-    cmd: python feature_engineer.py
-    deps:
-      - feature_engineer.py
-      - src/demand_forecast_engine/utils.py
-      - src/demand_forecast_engine/preprocessing/validate.py
-      - src/demand_forecast_engine/feature_engineering/features.py
-      - Data/interim/clean.parquet
-    params:
-      - data.date_col
-      - data.group_cols
-      - features
-      - model.seasonal_periods
-      - paths.clean_data
-      - paths.train_data
-      - paths.test_data
-      - paths.category_maps
+      - params.yaml:
+          - data.test_ratio
     outs:
       - Data/processed/train.parquet
       - Data/processed/test.parquet
-      - Data/processed/category_maps.json
+
+  train:
+    cmd: python save_model.py --input Data/processed/train.parquet --output models/holt_winters_model.joblib
+    deps:
+      - Data/processed/train.parquet
+      - src/demand_forecast_engine/models/save_model.py
+      - src/demand_forecast_engine/models/holt_winters.py
+    params:
+      - params.yaml:
+          - model.trend
+          - model.seasonal
+          - model.seasonal_periods
+          - model.use_log
+    outs:
+      - models/holt_winters_model.joblib
+
+  evaluate:
+    cmd: python evaluate.py --input Data/processed/test.parquet --output reports/metrics.json
+    deps:
+      - Data/processed/test.parquet
+      - models/holt_winters_model.joblib
+      - evaluate.py
+    metrics:
+      - reports/metrics.json

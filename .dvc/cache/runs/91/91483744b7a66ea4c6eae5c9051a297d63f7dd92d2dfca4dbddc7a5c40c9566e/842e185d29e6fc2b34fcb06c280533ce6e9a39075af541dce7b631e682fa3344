@@ -1,0 +1,26 @@
+cmd: python save_model.py --input data/processed/train.parquet --output 
+  models/holt_winters_model.joblib
+deps:
+- path: data/processed/train.parquet
+  hash: md5
+  md5: 9c0d88859a58ec35c50e439faff6d5a2
+  size: 700820
+- path: src/demand_forecast_engine/models/holt_winters.py
+  hash: md5
+  md5: 31bce79d4cdbb590a41dfa1697d55ac1
+  size: 4578
+- path: src/demand_forecast_engine/models/save_model.py
+  hash: md5
+  md5: f3f2629ce2f10a97cd324b3da537997f
+  size: 2952
+params:
+  params.yaml:
+    model.seasonal: add
+    model.seasonal_periods: 7
+    model.trend: add
+    model.use_log: true
+outs:
+- path: models/holt_winters_model.joblib
+  hash: md5
+  md5: c0a939faef567ea9944d9e3b36899b49
+  size: 69751

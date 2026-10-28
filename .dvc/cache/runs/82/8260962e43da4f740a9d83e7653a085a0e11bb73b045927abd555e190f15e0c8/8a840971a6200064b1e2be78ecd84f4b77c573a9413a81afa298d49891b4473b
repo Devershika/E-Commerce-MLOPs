@@ -1,0 +1,20 @@
+cmd: python evaluate.py --input data/processed/test.parquet --output 
+  reports/metrics.json
+deps:
+- path: data/processed/test.parquet
+  hash: md5
+  md5: 72e616c11a9cffdd04bd137033c5c4c9
+  size: 236741
+- path: evaluate.py
+  hash: md5
+  md5: 4832cd4d33a1dbd9062f445053f92a36
+  size: 3362
+- path: models/holt_winters_model.joblib
+  hash: md5
+  md5: c0a939faef567ea9944d9e3b36899b49
+  size: 69751
+outs:
+- path: reports/metrics.json
+  hash: md5
+  md5: c47dae9099a9912278bf77dc585bdfbf
+  size: 25066

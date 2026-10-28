@@ -1,155 +1,72 @@
 schema: '2.0'
 stages:
   preprocess:
-    cmd: python preprocess.py
+    cmd: python scripts/preprocess_data.py --input Data/sales_data.csv --output Data/processed --test-ratio 0.2
     deps:
-    - path: Data/sales_data.csv
-      hash: md5
-      md5: 7e35ffc6c173aede0f80ffde6369386a
-      size: 6343418
-    - path: preprocess.py
-      hash: md5
-      md5: 6c19033b31140573cce0dfee25eeb326
-      size: 3264
-    - path: src/demand_forecast_engine/preprocessing/clean.py
-      hash: md5
-      md5: cbfc56e52068b1fe6f208df748a42f3f
-      size: 2897
-    - path: src/demand_forecast_engine/preprocessing/validate.py
-      hash: md5
-      md5: 1af140a947e01eb2acb7f41fe08d3c05
-      size: 5224
-    - path: src/demand_forecast_engine/utils.py
-      hash: md5
-      md5: e5aacc511155d7b5d9b64bc9d42b8197
-      size: 1315
+      - path: Data/sales_data.csv
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+      - path: scripts/preprocess_data.py
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
     params:
       params.yaml:
-        data.date_col: Date
-        data.date_format: '%d-%m-%Y'
-        data.group_cols:
-        - Store ID
-        - Product ID
-        - Category
-        - Region
-        data.target_col: Demand
-        paths.clean_data: Data/interim/clean.parquet
-        paths.raw_data: Data/sales_data.csv
-        preprocess:
-          ffill_cols:
-          - Demand
-          log1p_cols:
-          - Demand
-          max_null_fraction: 0.05
-          require_continuous_dates: true
-        schema:
-          date:
-          - Date
-          string:
-          - Store ID
-          - Product ID
-          - Category
-          - Region
-          - Weather Condition
-          - Seasonality
-          numeric:
-          - Inventory Level
-          - Units Sold
-          - Units Ordered
-          - Price
-          - Discount
-          - Promotion
-          - Competitor Pricing
-          - Epidemic
-          - Demand
+        data.test_ratio: 0.2
     outs:
-    - path: Data/interim/clean.parquet
-      hash: md5
-      md5: acae49881c917ac310160135cc3f3056
-      size: 915469
-  feature_engineer:
-    cmd: python feature_engineer.py
+      - path: Data/processed/train.parquet
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+      - path: Data/processed/test.parquet
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+
+  train:
+    cmd: python save_model.py --input Data/processed/train.parquet --output models/holt_winters_model.joblib
     deps:
-    - path: Data/interim/clean.parquet
-      hash: md5
-      md5: acae49881c917ac310160135cc3f3056
-      size: 915469
-    - path: feature_engineer.py
-      hash: md5
-      md5: 25b27b8c955daa8528218b83ac2ef0da
-      size: 5657
-    - path: src/demand_forecast_engine/feature_engineering/features.py
-      hash: md5
-      md5: d01fe19825bd9195b3eb32a959b3c5d9
-      size: 5283
-    - path: src/demand_forecast_engine/preprocessing/validate.py
-      hash: md5
-      md5: 1af140a947e01eb2acb7f41fe08d3c05
-      size: 5224
-    - path: src/demand_forecast_engine/utils.py
-      hash: md5
-      md5: e5aacc511155d7b5d9b64bc9d42b8197
-      size: 1315
+      - path: Data/processed/train.parquet
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+      - path: src/demand_forecast_engine/models/holt_winters.py
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+      - path: src/demand_forecast_engine/models/save_model.py
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
     params:
       params.yaml:
-        data.date_col: Date
-        data.group_cols:
-        - Store ID
-        - Product ID
-        - Category
-        - Region
-        features:
-          test_ratio: 0.08
-          train_cutoff_date:
-          target_col: Demand_log1p
-          calendar:
-          - day
-          - month
-          - week
-          - dayofweek
-          - year
-          - quarter
-          - is_weekend
-          lag_cols:
-          - Demand_log1p
-          - Units Sold
-          - Inventory Level
-          - Price
-          lag_days:
-          - 1
-          - 7
-          rolling_cols:
-          - Demand_log1p
-          rolling_windows:
-          - 7
-          - 14
-          - 28
-          rolling_stats:
-          - mean
-          - std
-          categorical_features:
-          - Weather Condition
-          - Seasonality
-          drop_cols:
-          - Demand
-          - Units Sold
-          - Units Ordered
-          - Inventory Level
+        model.seasonal: add
         model.seasonal_periods: 7
-        paths.category_maps: Data/processed/category_maps.json
-        paths.clean_data: Data/interim/clean.parquet
-        paths.test_data: Data/processed/test.parquet
-        paths.train_data: Data/processed/train.parquet
+        model.trend: add
+        model.use_log: true
     outs:
-    - path: Data/processed/category_maps.json
-      hash: md5
-      md5: 200f4cd9ca3b8c4a77b3a03090646372
-      size: 200
-    - path: Data/processed/test.parquet
-      hash: md5
-      md5: 9e44e08f2fbe8ed23a161632bef2ae33
-      size: 571507
-    - path: Data/processed/train.parquet
-      hash: md5
-      md5: ec429dae980c987fc9d5065253e45f15
-      size: 5469916
+      - path: models/holt_winters_model.joblib
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+
+  evaluate:
+    cmd: python evaluate.py --input Data/processed/test.parquet --output reports/metrics.json
+    deps:
+      - path: Data/processed/test.parquet
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+      - path: evaluate.py
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+      - path: models/holt_winters_model.joblib
+        hash: md5
+        md5: 00000000000000000000000000000000
+        size: 0
+    metrics:
+      - path: reports/metrics.json
+        md5: 00000000000000000000000000000000
+        size: 0

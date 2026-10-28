@@ -1,0 +1,23 @@
+cmd: python scripts/preprocess_data.py --input Data/sales_data.csv --output 
+  data/processed --test-ratio 0.2
+deps:
+- path: Data/sales_data.csv
+  hash: md5
+  md5: 7e35ffc6c173aede0f80ffde6369386a
+  size: 6343418
+- path: scripts/preprocess_data.py
+  hash: md5
+  md5: 72a5a3aff9b43dd68f0ab727eb9f8d01
+  size: 2534
+params:
+  params.yaml:
+    data.test_ratio: 0.2
+outs:
+- path: data/processed/test.parquet
+  hash: md5
+  md5: 72e616c11a9cffdd04bd137033c5c4c9
+  size: 236741
+- path: data/processed/train.parquet
+  hash: md5
+  md5: 9c0d88859a58ec35c50e439faff6d5a2
+  size: 700820

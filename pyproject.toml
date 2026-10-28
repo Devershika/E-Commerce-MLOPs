@@ -15,7 +15,8 @@ dependencies = [
   "scikit-learn>=1.2",
   "streamlit>=1.30",
   "statsmodels>=0.14",
-  "joblib>=1.3"
+  "joblib>=1.3",
+  "pyarrow>=14.0"
 ]
 
 [tool.setuptools]

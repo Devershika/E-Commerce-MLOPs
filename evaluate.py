@@ -11,12 +11,18 @@ from sklearn.metrics import mean_absolute_percentage_error, r2_score
 from demand_forecast_engine.models.holt_winters import HoltWintersForecaster
 
 
-def load_sales_data(csv_path: str) -> pd.DataFrame:
-    df = pd.read_csv(csv_path)
+def load_sales_data(data_path: str) -> pd.DataFrame:
+    path = Path(data_path)
+    if path.suffix.lower() == ".parquet":
+        df = pd.read_parquet(path)
+    else:
+        df = pd.read_csv(path)
+
     if "Date" not in df.columns:
         raise ValueError("Expected a 'Date' column in the input dataset.")
     if "Demand" not in df.columns:
         raise ValueError("Expected a 'Demand' column in the input dataset.")
+
     df["Date"] = pd.to_datetime(df["Date"], format="mixed", dayfirst=True)
     return df.sort_values("Date").reset_index(drop=True)
 
