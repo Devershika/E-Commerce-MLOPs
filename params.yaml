@@ -1,0 +1,39 @@
+# Parameters for the data pipeline (Issue #2).
+# Edit values here, or override a few of them on the command line (see --help).
+# Paths are relative to the repository root.
+
+paths:
+  raw_data: Data/sales_data.csv
+  clean_data: Data/interim/clean.parquet
+  train_data: Data/processed/train.parquet
+  test_data: Data/processed/test.parquet
+  category_maps: Data/processed/category_maps.json
+
+data:
+  date_col: Date
+  date_format: "%d-%m-%Y"
+  target_col: Demand            # raw target, must exist in the CSV
+  group_cols: [Store ID, Product ID, Category, Region]   # one time series per combination
+
+preprocess:
+  ffill_cols: [Demand]      # forward-filled within each series (past values only)
+  log1p_cols: [Demand]      # creates <col>_log1p, the original column is kept
+
+features:
+  target_col: Demand_log1p
+  train_cutoff_date: "2023-11-30"    # train: Date <= cutoff, test: Date > cutoff
+
+  calendar: [day, month, week, dayofweek, year, quarter, is_weekend]
+
+  lag_cols: [Demand_log1p, Units Sold, Inventory Level, Price]
+  lags: [1, 7, 14, 28]
+
+  rolling_cols: [Demand_log1p]       # windows are computed on values shifted by 1 day
+  rolling_windows: [7, 14, 28]
+  rolling_stats: [mean, std]
+
+  encode_cols: [Weather Condition, Seasonality]   # category codes are learned on train only
+
+  # Dropped AFTER the lag features are built. These are only known once the day
+  # has happened (same-day sales/orders/stock), so using them would leak the target.
+  drop_cols: [Demand, Units Sold, Units Ordered, Inventory Level]
