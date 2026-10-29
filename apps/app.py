@@ -86,20 +86,6 @@ def load_historical_data():
         st.error("No dataset found in Data/processed/*.parquet or Data/sales_data.csv. Run `dvc pull` to fetch raw data or check Data/processed.")
         return pd.DataFrame()
 
-    # Read essential columns with efficient types
-    df = pd.read_csv(
-        data_path,
-        usecols=[
-            "Date",
-            "Store ID",
-            "Product ID",
-            "Category",
-            "Region",
-            "Demand",
-            "Price",
-            "Promotion",
-        ],
-    )
     df["Date"] = pd.to_datetime(df["Date"], format="%d-%m-%Y", errors="coerce")
     df = df.dropna(subset=["Date", "Demand"])
     df = df.sort_values(by="Date", ascending=True)
