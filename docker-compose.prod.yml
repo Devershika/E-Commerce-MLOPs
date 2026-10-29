@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  demand-forecast-api:
+    image: ghcr.io/devershika/e-commerce-mlops/demand-forecast-api:latest
+    container_name: demand_forecast_service
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - MODEL_PATH=/app/models/holt_winters_model.joblib
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
