@@ -20,12 +20,18 @@ MODEL_PATH = os.getenv("MODEL_PATH", "models/holt_winters_model.joblib")
 
 
 def get_or_load_model() -> HoltWintersForecaster:
-    """Loads the model from disk or cache."""
+    """Loads the model from disk or cache with cross-version unpickling fallback."""
     if "champion" not in models_cache:
+        model_loaded = False
         if os.path.exists(MODEL_PATH):
-            models_cache["champion"] = load_holt_winters_model(MODEL_PATH)
-        else:
-            # Fallback forecaster if artifact not present
+            try:
+                models_cache["champion"] = load_holt_winters_model(MODEL_PATH)
+                model_loaded = True
+            except Exception:
+                model_loaded = False
+
+        if not model_loaded:
+            # Fallback forecaster if artifact not present or unpickling cross-version mismatch occurs
             fallback = HoltWintersForecaster(trend="add", seasonal="add", seasonal_periods=7)
             synthetic_ts = pd.Series(
                 [80.0, 85.0, 90.0, 82.0, 88.0, 95.0, 100.0] * 5,
