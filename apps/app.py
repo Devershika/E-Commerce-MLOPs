@@ -57,21 +57,33 @@ st.markdown("""
 # ---------------------------------------------------------
 @st.cache_data(show_spinner=False)
 def load_historical_data():
-    """Loads and preprocesses a sample of sales data for visualization."""
-    data_path = os.path.join(os.getcwd(), "data", "sales_data.csv")
-    if not os.path.exists(data_path):
-        data_path = os.path.join(os.getcwd(), "Data", "sales_data.csv")
+    """Loads and preprocesses sales data for visualization from parquet or csv."""
+    root = os.getcwd()
+    parquet_train = os.path.join(root, "Data", "processed", "train.parquet")
+    parquet_test = os.path.join(root, "Data", "processed", "test.parquet")
+    csv_path_data = os.path.join(root, "data", "sales_data.csv")
+    csv_path_Data = os.path.join(root, "Data", "sales_data.csv")
 
-    if not os.path.exists(data_path):
-        st.error(f"Dataset not found at {data_path}. Please verify repo data directory.")
+    cols = ["Date", "Store ID", "Product ID", "Category", "Region", "Demand", "Price", "Promotion"]
+
+    if os.path.exists(parquet_train):
+        train_df = pd.read_parquet(parquet_train)
+        available_cols = [c for c in cols if c in train_df.columns]
+        dfs = [train_df[available_cols]]
+        if os.path.exists(parquet_test):
+            test_df = pd.read_parquet(parquet_test)
+            dfs.append(test_df[available_cols])
+        df = pd.concat(dfs, ignore_index=True)
+    elif os.path.exists(csv_path_data) or os.path.exists(csv_path_Data):
+        active_csv = csv_path_data if os.path.exists(csv_path_data) else csv_path_Data
+        df = pd.read_csv(active_csv)
+        available_cols = [c for c in cols if c in df.columns]
+        df = df[available_cols]
+    else:
+        st.error("No dataset found in Data/processed/*.parquet or Data/sales_data.csv. Run `dvc pull` to fetch raw data or check Data/processed.")
         return pd.DataFrame()
 
-    # Read essential columns with efficient types
-    df = pd.read_csv(
-        data_path,
-        usecols=["Date", "Store ID", "Product ID", "Category", "Region", "Demand", "Price", "Promotion"]
-    )
-    df["Date"] = pd.to_datetime(df["Date"], format="%d-%m-%Y", errors="coerce")
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     df = df.dropna(subset=["Date", "Demand"])
     df = df.sort_values(by="Date", ascending=True)
     return df
