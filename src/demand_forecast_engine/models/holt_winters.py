@@ -88,7 +88,9 @@ class HoltWintersForecaster:
                 warnings.filterwarnings("ignore", category=Warning, message=".*infer_freq.*")
                 inferred = pd.infer_freq(self.series_.index)
             freq = inferred if inferred else "D"
-            future_index = pd.date_range(start=last_index + pd.Timedelta(days=1), periods=horizon, freq=freq)
+            future_index = pd.date_range(
+                start=last_index + pd.Timedelta(days=1), periods=horizon, freq=freq
+            )
             predictions.index = future_index
 
         return predictions

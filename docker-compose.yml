@@ -1,20 +1,33 @@
-version: "3.8"
+# docker-compose.yml — local development
+# Usage:
+#   docker compose up --build
+#   curl http://localhost:8000/health
+version: "3.9"
 
 services:
   api:
     build:
       context: .
       dockerfile: Dockerfile
+      target: runtime
     image: demand-forecast-api:latest
-    container_name: demand_forecast_service
+    container_name: demand_forecast_api
     ports:
       - "8000:8000"
     environment:
-      - PORT=8000
-      - MODEL_PATH=/app/models/holt_winters_model.joblib
-    restart: always
+      # Override these to load the real model from S3:
+      # S3_BUCKET: your-bucket-name
+      # S3_KEY: models/holt_winters_model.joblib
+      MODEL_LOCAL_PATH: /app/models/holt_winters_model.joblib
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      # Mount a local models/ directory to provide the artifact without
+      # rebuilding the image.  Comment out if the model is baked into the image.
+      - ./models:/app/models:ro
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
+      start_period: 15s

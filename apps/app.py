@@ -2,7 +2,7 @@
 Streamlit Demand Forecasting Application
 =========================================
 Tracks and visualizes historical store sales demand, lets users interactively
-select Store, Product, Category, and Forecast Horizon, and fetches real-time 
+select Store, Product, Category, and Forecast Horizon, and fetches real-time
 SKU-level demand predictions from the FastAPI MLOps backend service.
 """
 
@@ -29,7 +29,8 @@ DEFAULT_API_URL = os.getenv("PREDICT_API_URL", "http://localhost:8000")
 # ---------------------------------------------------------
 # Custom Styling
 # ---------------------------------------------------------
-st.markdown("""
+st.markdown(
+    """
 <style>
     .metric-box {
         background-color: #f8f9fa;
@@ -49,7 +50,9 @@ st.markdown("""
     .badge-online { background-color: #dcfce7; color: #166534; }
     .badge-mock { background-color: #fef3c7; color: #92400e; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ---------------------------------------------------------
@@ -83,7 +86,7 @@ def load_historical_data():
         st.error("No dataset found in Data/processed/*.parquet or Data/sales_data.csv. Run `dvc pull` to fetch raw data or check Data/processed.")
         return pd.DataFrame()
 
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    df["Date"] = pd.to_datetime(df["Date"], format="%d-%m-%Y", errors="coerce")
     df = df.dropna(subset=["Date", "Demand"])
     df = df.sort_values(by="Date", ascending=True)
     return df
@@ -92,10 +95,17 @@ def load_historical_data():
 # ---------------------------------------------------------
 # API Helper with Mock Fallback
 # ---------------------------------------------------------
-def fetch_forecast(api_url: str, store_id: str, product_id: str, category: str, horizon_days: int, last_date: datetime.date):
+def fetch_forecast(
+    api_url: str,
+    store_id: str,
+    product_id: str,
+    category: str,
+    horizon_days: int,
+    last_date: datetime.date,
+):
     """
     Calls the FastAPI backend `/predict` endpoint.
-    If backend is unreachable or not yet deployed, seamlessly falls back to a 
+    If backend is unreachable or not yet deployed, seamlessly falls back to a
     local Holt-Winters trend simulation so the UI remains fully functional.
     """
     endpoint = f"{api_url.rstrip('/')}/predict"
@@ -137,7 +147,9 @@ def fetch_forecast(api_url: str, store_id: str, product_id: str, category: str, 
 # ---------------------------------------------------------
 def main():
     st.title("📦 E-Commerce Demand Forecasting Dashboard")
-    st.caption("AI-powered SKU-level forecasting and inventory planning using Holt-Winters Exponential Smoothing")
+    st.caption(
+        "AI-powered SKU-level forecasting and inventory planning using Holt-Winters Exponential Smoothing"
+    )
 
     # Load dataset
     with st.spinner("Loading transactional demand data..."):
@@ -160,9 +172,15 @@ def main():
         backend_healthy = False
 
     if backend_healthy:
-        st.sidebar.markdown('<span class="badge badge-online">● Backend API Connected</span>', unsafe_allow_html=True)
+        st.sidebar.markdown(
+            '<span class="badge badge-online">● Backend API Connected</span>',
+            unsafe_allow_html=True,
+        )
     else:
-        st.sidebar.markdown('<span class="badge badge-mock">○ Backend Offline (Mock Active)</span>', unsafe_allow_html=True)
+        st.sidebar.markdown(
+            '<span class="badge badge-mock">○ Backend Offline (Mock Active)</span>',
+            unsafe_allow_html=True,
+        )
 
     st.sidebar.markdown("---")
     st.sidebar.header("🔍 SKU & Parameter Selection")
@@ -184,7 +202,7 @@ def main():
         max_value=60,
         value=14,
         step=7,
-        help="Number of days to forecast into the future"
+        help="Number of days to forecast into the future",
     )
 
     # Filtered Time Series Data
@@ -207,7 +225,10 @@ def main():
     with col3:
         st.metric("Avg Unit Price", f"${avg_price:.2f}")
     with col4:
-        st.metric("Data Range", f"{sku_data['Date'].min().strftime('%b %Y')} - {last_date.strftime('%b %Y')}")
+        st.metric(
+            "Data Range",
+            f"{sku_data['Date'].min().strftime('%b %Y')} - {last_date.strftime('%b %Y')}",
+        )
 
     st.markdown("---")
 
@@ -218,15 +239,19 @@ def main():
         product_id=selected_product,
         category=selected_category,
         horizon_days=forecast_horizon,
-        last_date=last_date
+        last_date=last_date,
     )
 
     if is_mock:
-        st.info("ℹ️ **Notice:** Running in mock simulation mode because the FastAPI backend is not yet running on port 8000. Once Abhav's API container or EC2 service is launched, real-time model predictions will automatically load here.")
+        st.info(
+            "ℹ️ **Notice:** Running in mock simulation mode because the FastAPI backend is not yet running on port 8000. Once Abhav's API container or EC2 service is launched, real-time model predictions will automatically load here."
+        )
 
     # Main Interactive Plotly Visualization
     st.subheader(f"📈 Historical Demand vs. {forecast_horizon}-Day Forecast")
-    st.caption(f"Store: `{selected_store}` | Product: `{selected_product}` | Category: `{selected_category}` | Engine: `{model_source}`")
+    st.caption(
+        f"Store: `{selected_store}` | Product: `{selected_product}` | Category: `{selected_category}` | Engine: `{model_source}`"
+    )
 
     # Recent window for clear view (last 90 days of history + forecast)
     recent_history_days = 90
@@ -243,7 +268,7 @@ def main():
             mode="lines+markers",
             name="Historical Sales Demand",
             line=dict(color="#1f2937", width=2),
-            marker=dict(size=4)
+            marker=dict(size=4),
         )
     )
 
@@ -259,7 +284,7 @@ def main():
             mode="lines+markers",
             name="Forecasted Demand",
             line=dict(color="#4f46e5", width=2.5, dash="dash"),
-            marker=dict(size=6, symbol="diamond")
+            marker=dict(size=6, symbol="diamond"),
         )
     )
 
@@ -276,7 +301,7 @@ def main():
             line=dict(color="rgba(255,255,255,0)"),
             hoverinfo="skip",
             showlegend=True,
-            name="Forecast Confidence Range (±12%)"
+            name="Forecast Confidence Range (±12%)",
         )
     )
 
@@ -308,14 +333,17 @@ def main():
         fc_sum = forecast_df["predicted_demand"].sum()
         safety_stock = int(fc_sum * 1.15)
 
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-box">
             <b>Recommended Replenishment Order:</b> {int(fc_sum):,} units<br>
             <b>Recommended Safety Stock (15% buffer):</b> {safety_stock:,} units<br>
             <b>Peak Projected Daily Demand:</b> {forecast_df['predicted_demand'].max():.1f} units<br>
             <b>Model Identified Seasonality:</b> Weekly cycles (7-day periodic peaks)
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         # Download forecast CSV
         csv_data = display_fc.to_csv(index=False).encode("utf-8")

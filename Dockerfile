@@ -1,53 +1,87 @@
-# Multi-stage production Dockerfile for Demand Forecasting FastAPI service
+# =============================================================================
+# Multi-stage Dockerfile for the Demand Forecast FastAPI service
+# Stage 1: builder — install all dependencies into a virtual environment
+# Stage 2: runtime — minimal production image (non-root, Uvicorn)
+# =============================================================================
 
+# ---- Stage 1: builder -------------------------------------------------------
 FROM python:3.11-slim AS builder
 
-WORKDIR /app
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
+# Build tools needed for compiled wheels (numpy, statsmodels, etc.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+        gcc \
+        g++ \
+        gfortran \
+        libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt pyproject.toml ./
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir fastapi uvicorn pydantic httpx && \
-    pip install --no-cache-dir -r requirements.txt
+WORKDIR /build
 
-# Final Runtime Image
-FROM python:3.11-slim
+# Copy manifests first for layer-cache efficiency
+COPY requirements.txt requirements-api.txt pyproject.toml ./
+COPY src/ ./src/
+
+# Isolated venv
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN pip install --upgrade pip==24.0 && \
+    # Install base project deps (pandas, numpy, statsmodels, etc.)
+    pip install --no-cache-dir -r requirements.txt && \
+    # Install API-specific deps
+    pip install --no-cache-dir \
+        "fastapi==0.111.0" \
+        "uvicorn[standard]==0.29.0" \
+        "pydantic==2.7.1" \
+        "joblib==1.4.2" \
+        "statsmodels>=0.14" \
+        "httpx==0.27.0" \
+    # Install the demand_forecast_engine package in editable mode
+    && pip install --no-cache-dir -e .
+
+# ---- Stage 2: runtime -------------------------------------------------------
+FROM python:3.11-slim AS runtime
+
+# Runtime-only system deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgomp1 \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Non-root user for security
+RUN groupadd --gid 1001 appgroup && \
+    useradd  --uid 1001 --gid appgroup --no-create-home appuser
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PORT=8000 \
-    MODEL_PATH=/app/models/holt_winters_model.joblib
+# Copy venv from builder (keeps image lean)
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
-# Create non-root user for security
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Copy application source and package manifest
+COPY src/ ./src/
+COPY pyproject.toml ./
 
-# Copy installed wheels and libraries
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+# Pre-bake the model artifact into the image when available.
+# Comment out if you prefer volume-mount or S3 loading at runtime.
+COPY models/ ./models/
 
-# Copy application source code, models, and packaging metadata
-COPY pyproject.toml README.md /app/
-COPY src/ /app/src/
-COPY models/ /app/models/
-COPY apps/ /app/apps/
+# Fix ownership so the non-root user can write temp files if needed
+RUN chown -R appuser:appgroup /app
 
-RUN pip install --no-cache-dir --no-deps -e /app
-
-# Set non-root permissions
-RUN chown -R appuser:appuser /app
 USER appuser
-
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()" || exit 1
+# Health check — polls /health every 30 s; 3 failures → unhealthy
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Production ASGI server: Uvicorn with 2 worker processes
+CMD ["uvicorn", "src.api.main:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--workers", "2", \
+     "--loop", "uvloop", \
+     "--log-level", "info"]

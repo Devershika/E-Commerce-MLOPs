@@ -1,5 +1,6 @@
 """Data quality checks. Every check raises DataValidationError with a message that says
 what is wrong and where, so a failing pipeline tells you what to fix."""
+
 from __future__ import annotations
 
 import logging
@@ -42,12 +43,16 @@ def validate_schema(df: pd.DataFrame, schema: Mapping[str, Sequence[str]]) -> No
         if not is_numeric_dtype(df[col]):
             not_numbers = pd.to_numeric(df[col], errors="coerce").isna() & df[col].notna()
             examples = _preview(df.loc[not_numbers, col].astype(str).unique(), 3)
-            problems.append(f"'{col}' must be numeric but has dtype {df[col].dtype} (e.g. {examples})")
+            problems.append(
+                f"'{col}' must be numeric but has dtype {df[col].dtype} (e.g. {examples})"
+            )
     for col in string_cols:
         if is_numeric_dtype(df[col]):
             problems.append(f"'{col}' must be text but has numeric dtype {df[col].dtype}")
     if problems:
-        raise DataValidationError("Raw data has wrong column types:\n  - " + "\n  - ".join(problems))
+        raise DataValidationError(
+            "Raw data has wrong column types:\n  - " + "\n  - ".join(problems)
+        )
 
 
 def validate_nulls(
@@ -67,14 +72,20 @@ def validate_nulls(
         if share > allowed:
             problems.append(f"'{col}': {n_null} missing ({share:.2%}), allowed {allowed:.2%}")
     if problems:
-        raise DataValidationError(f"{context}: too many missing values:\n  - " + "\n  - ".join(problems))
+        raise DataValidationError(
+            f"{context}: too many missing values:\n  - " + "\n  - ".join(problems)
+        )
 
 
 def validate_non_negative(df: pd.DataFrame, cols: Sequence[str], context: str) -> None:
     """Fail if a column has negative values (log1p is undefined below -1)."""
-    problems = [f"'{c}': {int((df[c] < 0).sum())} negative value(s)" for c in cols if (df[c] < 0).any()]
+    problems = [
+        f"'{c}': {int((df[c] < 0).sum())} negative value(s)" for c in cols if (df[c] < 0).any()
+    ]
     if problems:
-        raise DataValidationError(f"{context}: negative values found:\n  - " + "\n  - ".join(problems))
+        raise DataValidationError(
+            f"{context}: negative values found:\n  - " + "\n  - ".join(problems)
+        )
 
 
 def validate_date_continuity(
@@ -96,7 +107,9 @@ def validate_date_continuity(
         f"(lags assume one row per day):\n  - " + "\n  - ".join(lines)
     )
     if strict:
-        raise DataValidationError(message + "\nFix the data, or set preprocess.require_continuous_dates: false.")
+        raise DataValidationError(
+            message + "\nFix the data, or set preprocess.require_continuous_dates: false."
+        )
     log.warning(message)
 
 

@@ -13,6 +13,7 @@ dependencies = [
   "pandas>=1.5",
   "numpy>=1.23",
   "scikit-learn>=1.2",
+  "plotly>=5.0",
   "streamlit>=1.30",
   "statsmodels>=0.14",
   "joblib>=1.3",

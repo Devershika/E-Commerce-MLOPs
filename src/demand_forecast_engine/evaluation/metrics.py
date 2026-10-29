@@ -40,11 +40,11 @@ class ForecastingMetrics:
         self.y_true = np.array(y_true)
 
     def MAPE(self):
-        """
+        r"""
         Calculates the Mean Absolute Percentage Error (MAPE).
 
-        MAPE measures the average magnitude of error produced by a model 
-        relative to the actual values, expressed as a percentage. 
+        MAPE measures the average magnitude of error produced by a model
+        relative to the actual values, expressed as a percentage.
         Zero values in y_true are masked to avoid division by zero errors.
 
         Formula:
@@ -54,15 +54,17 @@ class ForecastingMetrics:
             float: The MAPE value rounded to 2 decimal places.
         """
         mask = self.y_true != 0
-        mape_val = np.mean(np.abs((self.y_true[mask] - self.y_pred[mask]) / self.y_true[mask])) * 100
+        mape_val = (
+            np.mean(np.abs((self.y_true[mask] - self.y_pred[mask]) / self.y_true[mask])) * 100
+        )
         return mape_val.round(2)
-    
+
     def WMAPE(self):
-        """
+        r"""
         Calculates the Weighted Mean Absolute Percentage Error (WMAPE).
 
-        WMAPE (also known as MAD/Mean ratio) weights the absolute errors 
-        by the volume of actuals. This is particularly useful in demand 
+        WMAPE (also known as MAD/Mean ratio) weights the absolute errors
+        by the volume of actuals. This is particularly useful in demand
         forecasting to avoid the skewing effect of low-volume items.
 
         Formula:
