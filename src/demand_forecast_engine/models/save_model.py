@@ -25,11 +25,28 @@ def load_sales_data(data_path: str) -> pd.DataFrame:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Train and save a Holt-Winters demand forecast model.")
-    parser.add_argument("--input", default="Data/sales_data.csv", help="CSV or parquet input file containing date and demand columns.")
-    parser.add_argument("--output", default="models/holt_winters_model.joblib", help="Destination for the serialized model bundle.")
-    parser.add_argument("--group-by", nargs="*", default=["Category", "Region", "Store ID", "Product ID"], help="Columns used to group the series.")
-    parser.add_argument("--seasonal-periods", type=int, default=7, help="Seasonal period used by Holt-Winters.")
+    parser = argparse.ArgumentParser(
+        description="Train and save a Holt-Winters demand forecast model."
+    )
+    parser.add_argument(
+        "--input",
+        default="Data/sales_data.csv",
+        help="CSV or parquet input file containing date and demand columns.",
+    )
+    parser.add_argument(
+        "--output",
+        default="models/holt_winters_model.joblib",
+        help="Destination for the serialized model bundle.",
+    )
+    parser.add_argument(
+        "--group-by",
+        nargs="*",
+        default=["Category", "Region", "Store ID", "Product ID"],
+        help="Columns used to group the series.",
+    )
+    parser.add_argument(
+        "--seasonal-periods", type=int, default=7, help="Seasonal period used by Holt-Winters."
+    )
     args = parser.parse_args()
 
     df = load_sales_data(args.input)

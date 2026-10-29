@@ -3,6 +3,7 @@
 Every step here only looks at past values of a series, or at one row at a time,
 so running them before the train/test split does not leak test information.
 """
+
 from __future__ import annotations
 
 import logging
@@ -39,7 +40,9 @@ def parse_dates(df: pd.DataFrame, date_col: str, date_format: str) -> pd.DataFra
     return df
 
 
-def sort_temporal(df: pd.DataFrame, group_cols: Sequence[str], date_col: str = "Date") -> pd.DataFrame:
+def sort_temporal(
+    df: pd.DataFrame, group_cols: Sequence[str], date_col: str = "Date"
+) -> pd.DataFrame:
     """Sort by series, then by date, so each series is in time order."""
     return df.sort_values([*group_cols, date_col], kind="stable").reset_index(drop=True)
 

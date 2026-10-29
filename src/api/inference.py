@@ -5,6 +5,7 @@ Dispatches to either:
   - The real Holt-Winters model bundle (when loaded), or
   - The mock predictor (development / CI fallback).
 """
+
 from __future__ import annotations
 
 import datetime

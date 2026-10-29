@@ -11,6 +11,7 @@ The loader is called once at application startup (lifespan context).
 The resulting ModelBundle (or None) is stored in app.state.model_bundle
 so every request handler can reuse it without re-loading.
 """
+
 from __future__ import annotations
 
 import logging
@@ -24,9 +25,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Configuration — override via environment variables
 # ---------------------------------------------------------------------------
-MODEL_LOCAL_PATH: Path = Path(
-    os.getenv("MODEL_LOCAL_PATH", "models/holt_winters_model.joblib")
-)
+MODEL_LOCAL_PATH: Path = Path(os.getenv("MODEL_LOCAL_PATH", "models/holt_winters_model.joblib"))
 S3_BUCKET: Optional[str] = os.getenv("S3_BUCKET")
 S3_KEY: Optional[str] = os.getenv("S3_KEY", "models/holt_winters_model.joblib")
 

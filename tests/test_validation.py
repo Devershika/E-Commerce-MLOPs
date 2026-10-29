@@ -1,4 +1,5 @@
 """Quality checks: failures must be clear, and must stop the scripts with exit code 1."""
+
 import subprocess
 import sys
 from pathlib import Path
@@ -84,7 +85,9 @@ def test_test_ratio_picks_the_last_days_by_time():
     df = pd.DataFrame({"Date": pd.date_range("2023-01-01", periods=100)})
     cutoff = resolve_cutoff(df, "Date", test_ratio=0.1)
     assert cutoff == pd.Timestamp("2023-03-31")  # 10 test days: Apr 1 to Apr 10
-    assert resolve_cutoff(df, "Date", cutoff_date="2023-02-01", test_ratio=0.1) == pd.Timestamp("2023-02-01")
+    assert resolve_cutoff(df, "Date", cutoff_date="2023-02-01", test_ratio=0.1) == pd.Timestamp(
+        "2023-02-01"
+    )
 
 
 @pytest.mark.parametrize("ratio", [0, 1, 1.5, -0.1])
@@ -108,8 +111,11 @@ def test_require_columns_lists_what_was_found():
 
 # ---- the scripts themselves: one clear line, exit code 1, no traceback --------------------------
 
+
 def run_script(script, *args):
-    return subprocess.run([sys.executable, str(ROOT / script), *args], capture_output=True, text=True)
+    return subprocess.run(
+        [sys.executable, str(ROOT / script), *args], capture_output=True, text=True
+    )
 
 
 def test_preprocess_script_fails_gracefully_on_missing_column(tmp_path):
@@ -118,8 +124,13 @@ def test_preprocess_script_fails_gracefully_on_missing_column(tmp_path):
     schema = yaml.safe_load((ROOT / "params.yaml").read_text())["schema"]
     columns = [c for kind in ("date", "string", "numeric") for c in schema[kind]]
     bad = tmp_path / "bad.csv"
-    pd.DataFrame([["01-01-2023"] + ["x"] * 6 + [1] * 9], columns=columns).drop(columns=["Price"]).to_csv(bad, index=False)
-    result = run_script("preprocess.py", "--input", str(bad), "--output", str(tmp_path / "out.parquet"))
+    n_string = len(schema["string"])
+    n_numeric = len(schema["numeric"])
+    row = ["01-01-2023"] + ["x"] * n_string + [1] * n_numeric
+    pd.DataFrame([row], columns=columns).drop(columns=["Price"]).to_csv(bad, index=False)
+    result = run_script(
+        "preprocess.py", "--input", str(bad), "--output", str(tmp_path / "out.parquet")
+    )
     assert result.returncode == 1
     assert "missing required column(s): Price" in result.stderr
     assert "Traceback" not in result.stderr
@@ -127,7 +138,13 @@ def test_preprocess_script_fails_gracefully_on_missing_column(tmp_path):
 
 
 def test_preprocess_script_fails_gracefully_on_missing_file(tmp_path):
-    result = run_script("preprocess.py", "--input", str(tmp_path / "nope.csv"), "--output", str(tmp_path / "o.parquet"))
+    result = run_script(
+        "preprocess.py",
+        "--input",
+        str(tmp_path / "nope.csv"),
+        "--output",
+        str(tmp_path / "o.parquet"),
+    )
     assert result.returncode == 1
     assert "dvc pull" in result.stderr and "Traceback" not in result.stderr
 
@@ -136,8 +153,13 @@ def test_feature_script_fails_gracefully_when_input_lacks_columns(tmp_path):
     bad = tmp_path / "clean.parquet"
     pd.DataFrame({"Date": pd.date_range("2023-01-01", periods=5)}).to_parquet(bad)
     result = run_script(
-        "feature_engineer.py", "--input", str(bad),
-        "--train-output", str(tmp_path / "tr.parquet"), "--test-output", str(tmp_path / "te.parquet"),
+        "feature_engineer.py",
+        "--input",
+        str(bad),
+        "--train-output",
+        str(tmp_path / "tr.parquet"),
+        "--test-output",
+        str(tmp_path / "te.parquet"),
     )
     assert result.returncode == 1
     assert "missing required column(s)" in result.stderr and "Traceback" not in result.stderr

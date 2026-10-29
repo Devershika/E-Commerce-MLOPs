@@ -23,10 +23,11 @@ from src.api.main import app
 from src.api.mock_service import mock_predict
 from src.api.schemas import PredictRequest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
 def _valid_payload(**overrides: Any) -> dict:
     base = {
         "store_id": "STORE_01",
@@ -48,6 +49,8 @@ def _make_stub_bundle(horizon_size: int = 7) -> ModelBundle:
 # ---------------------------------------------------------------------------
 # TestClient fixtures
 # ---------------------------------------------------------------------------
+
+
 @pytest.fixture()
 def client():
     """TestClient with no model loaded (mock mode)."""
@@ -67,6 +70,8 @@ def client_with_model():
 # ---------------------------------------------------------------------------
 # /health
 # ---------------------------------------------------------------------------
+
+
 class TestHealth:
     def test_health_returns_200(self, client: TestClient):
         resp = client.get("/health")
@@ -87,6 +92,8 @@ class TestHealth:
 # ---------------------------------------------------------------------------
 # /predict — payload validation
 # ---------------------------------------------------------------------------
+
+
 class TestPredictValidation:
     def test_valid_payload_returns_200(self, client: TestClient):
         resp = client.post("/predict", json=_valid_payload())
@@ -103,13 +110,21 @@ class TestPredictValidation:
         assert client.post("/predict", json=payload).status_code == 422
 
     def test_horizon_zero_returns_422(self, client: TestClient):
-        assert client.post("/predict", json=_valid_payload(forecast_horizon_days=0)).status_code == 422
+        assert (
+            client.post("/predict", json=_valid_payload(forecast_horizon_days=0)).status_code == 422
+        )
 
     def test_horizon_negative_returns_422(self, client: TestClient):
-        assert client.post("/predict", json=_valid_payload(forecast_horizon_days=-1)).status_code == 422
+        assert (
+            client.post("/predict", json=_valid_payload(forecast_horizon_days=-1)).status_code
+            == 422
+        )
 
     def test_horizon_over_90_returns_422(self, client: TestClient):
-        assert client.post("/predict", json=_valid_payload(forecast_horizon_days=91)).status_code == 422
+        assert (
+            client.post("/predict", json=_valid_payload(forecast_horizon_days=91)).status_code
+            == 422
+        )
 
     def test_blank_store_id_returns_422(self, client: TestClient):
         assert client.post("/predict", json=_valid_payload(store_id="   ")).status_code == 422
@@ -121,6 +136,8 @@ class TestPredictValidation:
 # ---------------------------------------------------------------------------
 # /predict — mock mode response shape
 # ---------------------------------------------------------------------------
+
+
 class TestPredictMockResponse:
     def test_response_contains_forecast_list(self, client: TestClient):
         data = client.post("/predict", json=_valid_payload(forecast_horizon_days=5)).json()
@@ -160,6 +177,8 @@ class TestPredictMockResponse:
 # ---------------------------------------------------------------------------
 # /predict — real model bundle path
 # ---------------------------------------------------------------------------
+
+
 class TestPredictWithRealModel:
     def test_returns_200_with_model_bundle(self, client_with_model: TestClient):
         resp = client_with_model.post("/predict", json=_valid_payload(forecast_horizon_days=7))
@@ -186,6 +205,8 @@ class TestPredictWithRealModel:
 # ---------------------------------------------------------------------------
 # Inference module (unit tests, no HTTP)
 # ---------------------------------------------------------------------------
+
+
 class TestRunInferenceDirect:
     def _make_request(self, horizon: int = 5) -> PredictRequest:
         return PredictRequest(
@@ -228,6 +249,8 @@ class TestRunInferenceDirect:
 # ---------------------------------------------------------------------------
 # Mock predictor (unit tests)
 # ---------------------------------------------------------------------------
+
+
 class TestMockPredict:
     def test_returns_correct_count(self):
         results = mock_predict("S1", "P1", "Electronics", 7)

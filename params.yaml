@@ -3,11 +3,17 @@
 
 paths:
   raw_data: Data/sales_data.csv
-  clean_data: Data/interim/clean.parquet
+  clean_data: Data/processed/clean.parquet
   processed_dir: Data/processed
   train_data: Data/processed/train.parquet
   test_data: Data/processed/test.parquet
   category_maps: Data/processed/category_maps.json
+
+# Input dataset contract — used by validate_schema in preprocess.py
+schema:
+  date: [Date]
+  string: [Store ID, Product ID, Category, Region]
+  numeric: [Price, Demand, Promotion]
 
 # Input dataset contract
 data:
@@ -18,13 +24,6 @@ data:
   group_cols: ["Store ID", "Product ID", "Category", "Region"]
   test_ratio: 0.2
 
-# Expected raw columns and their types for validation
-schema:
-  date: [Date]
-  string: [Store ID, Product ID, Category, Region, Weather Condition, Seasonality]
-  numeric: [Inventory Level, Units Sold, Units Ordered, Price, Discount, Promotion,
-            Competitor Pricing, Epidemic, Demand]
-
 # Preprocessing settings
 preprocess:
   ffill_cols: [Demand]
@@ -32,19 +31,19 @@ preprocess:
   max_null_fraction: 0.05
   require_continuous_dates: true
 
-# Feature engineering parameters
+# Feature engineering settings — used by feature_engineer.py
 features:
+  target_col: Demand
   test_ratio: 0.2
   train_cutoff_date: null
-  target_col: Demand_log1p
-  calendar: [day, month, week, dayofweek, year, quarter, is_weekend]
-  lag_cols: [Demand_log1p, Units Sold, Inventory Level, Price]
-  lag_days: [1, 7]
-  rolling_cols: [Demand_log1p]
-  rolling_windows: [7, 14, 28]
+  calendar: [dayofweek, month, week, is_weekend]
+  lag_cols: [Demand]
+  lag_days: [1, 7, 14]
+  rolling_cols: [Demand]
+  rolling_windows: [7, 14]
   rolling_stats: [mean, std]
-  categorical_features: [Weather Condition, Seasonality]
-  drop_cols: [Demand, Units Sold, Units Ordered, Inventory Level]
+  categorical_features: [Category, Region]
+  drop_cols: []
 
 # Model tuning settings used by the Holt-Winters stage
 model:

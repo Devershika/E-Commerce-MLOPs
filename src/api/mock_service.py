@@ -2,6 +2,7 @@
 Mock forecaster used while the real Holt-Winters model artifact is not yet available.
 Swap this out in loader.py once models/holt_winters_model.joblib is present.
 """
+
 from __future__ import annotations
 
 import datetime

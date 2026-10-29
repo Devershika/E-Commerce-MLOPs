@@ -2,6 +2,7 @@
 Pydantic request/response schemas for the demand forecasting API.
 Matches Contract B defined in docs/MLOPS_IMPLEMENTATION_PLAN.md.
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -83,6 +84,4 @@ class HealthResponse(BaseModel):
     status: str
     model: str
     version: str
-    model_loaded: bool = Field(
-        ..., description="True when a real model artifact is in memory."
-    )
+    model_loaded: bool = Field(..., description="True when a real model artifact is in memory.")
