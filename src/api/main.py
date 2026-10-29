@@ -1,116 +1,126 @@
-"""FastAPI Demand Forecasting Prediction Microservice."""
+"""
+FastAPI prediction service for E-Commerce Demand Forecasting.
+Endpoints:
+  GET  /health   — liveness + model metadata
+  POST /predict  — day-ahead demand forecast
+"""
+
 from __future__ import annotations
 
-import os
+import logging
 from contextlib import asynccontextmanager
-from typing import Dict, List, Optional
+from typing import AsyncGenerator
 
-import pandas as pd
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from demand_forecast_engine.models.holt_winters import (
-    HoltWintersForecaster,
-    load_holt_winters_model,
+from src.api.inference import run_inference
+from src.api.loader import MODEL_NAME, MODEL_VERSION, load_model
+from src.api.schemas import HealthResponse, PredictRequest, PredictResponse
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
 )
-
-# Global model store
-models_cache: Dict[str, HoltWintersForecaster] = {}
-MODEL_PATH = os.getenv("MODEL_PATH", "models/holt_winters_model.joblib")
+logger = logging.getLogger(__name__)
 
 
-def get_or_load_model() -> HoltWintersForecaster:
-    """Loads the model from disk or cache with cross-version unpickling fallback."""
-    if "champion" not in models_cache:
-        model_loaded = False
-        if os.path.exists(MODEL_PATH):
-            try:
-                models_cache["champion"] = load_holt_winters_model(MODEL_PATH)
-                model_loaded = True
-            except Exception:
-                model_loaded = False
-
-        if not model_loaded:
-            # Fallback forecaster if artifact not present or unpickling cross-version mismatch occurs
-            fallback = HoltWintersForecaster(trend="add", seasonal="add", seasonal_periods=7)
-            synthetic_ts = pd.Series(
-                [80.0, 85.0, 90.0, 82.0, 88.0, 95.0, 100.0] * 5,
-                index=pd.date_range("2024-01-01", periods=35, freq="D"),
-                name="Demand",
-            )
-            fallback.fit(synthetic_ts)
-            models_cache["champion"] = fallback
-    return models_cache["champion"]
-
-
+# ---------------------------------------------------------------------------
+# Application lifespan: load model once at startup
+# ---------------------------------------------------------------------------
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup: preload model
-    get_or_load_model()
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Load the model bundle at startup; release resources on shutdown."""
+    logger.info("Starting up — attempting to load model artifact …")
+    app.state.model_bundle = load_model()
+    if app.state.model_bundle is None:
+        logger.warning("No model artifact loaded. /predict will return mock forecasts.")
+    else:
+        logger.info("Model loaded: %s", app.state.model_bundle.model_name)
     yield
-    # Shutdown
-    models_cache.clear()
+    logger.info("Shutting down.")
+    app.state.model_bundle = None
 
 
+# ---------------------------------------------------------------------------
+# App factory
+# ---------------------------------------------------------------------------
 app = FastAPI(
-    title="Demand Forecasting API",
-    description="Production prediction service serving SKU demand forecasts using Holt-Winters Exponential Smoothing",
-    version="1.0.0",
+    title="Demand Forecast API",
+    description=(
+        "Serves day-ahead SKU-level demand predictions "
+        "from the Holt-Winters Exponential Smoothing champion model."
+    ),
+    version=MODEL_VERSION,
     lifespan=lifespan,
 )
 
-
-class PredictRequest(BaseModel):
-    store_id: str = Field(..., json_schema_extra={"example": "S001"})
-    product_id: str = Field(..., json_schema_extra={"example": "P0001"})
-    category: Optional[str] = Field("Electronics", json_schema_extra={"example": "Electronics"})
-    forecast_horizon_days: int = Field(14, ge=1, le=180, json_schema_extra={"example": 14})
-
-
-class ForecastItem(BaseModel):
-    date: str
-    predicted_demand: float
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Tighten in production
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 
-class PredictResponse(BaseModel):
-    store_id: str
-    product_id: str
-    forecast: List[ForecastItem]
-    model_name: str
-    evaluation_mape: Optional[float] = None
+# ---------------------------------------------------------------------------
+# Global exception handler — ensure JSON error bodies on unexpected failures
+# ---------------------------------------------------------------------------
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    logger.error("Unhandled exception for %s: %s", request.url, exc, exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error. Please try again later."},
+    )
 
 
-@app.get("/health")
-def health():
-    forecaster = get_or_load_model()
-    return {
-        "status": "healthy",
-        "model": "Holt-Winters (Fine-Tuned)",
-        "version": "1.0.0",
-        "model_loaded": forecaster is not None,
-    }
+# ---------------------------------------------------------------------------
+# Routes
+# ---------------------------------------------------------------------------
+@app.get(
+    "/health",
+    response_model=HealthResponse,
+    summary="Service liveness and model metadata",
+    tags=["Ops"],
+)
+async def health(request: Request) -> HealthResponse:
+    """
+    Returns service health and information about the currently loaded model.
+    `model_loaded: false` means the API is running in mock mode.
+    """
+    bundle = request.app.state.model_bundle
+    return HealthResponse(
+        status="healthy",
+        model=bundle.model_name if bundle else MODEL_NAME,
+        version=bundle.version if bundle else MODEL_VERSION,
+        model_loaded=bundle is not None,
+    )
 
 
-@app.post("/predict", response_model=PredictResponse)
-def predict(request: PredictRequest):
+@app.post(
+    "/predict",
+    response_model=PredictResponse,
+    summary="Generate day-ahead demand forecast",
+    status_code=200,
+    tags=["Forecasting"],
+)
+async def predict(
+    payload: PredictRequest,
+    request: Request,
+) -> PredictResponse:
+    """
+    Generate a demand forecast for a given Store × Product × horizon.
+    - Returns HTTP 422 automatically if payload validation fails (Pydantic).
+    - Returns HTTP 500 if inference raises an unexpected error.
+    """
+    bundle = request.app.state.model_bundle
     try:
-        forecaster = get_or_load_model()
-        preds = forecaster.forecast(request.forecast_horizon_days)
-
-        forecast_items = [
-            ForecastItem(
-                date=idx.strftime("%Y-%m-%d") if hasattr(idx, "strftime") else str(idx),
-                predicted_demand=round(float(val), 2),
-            )
-            for idx, val in preds.items()
-        ]
-
-        return PredictResponse(
-            store_id=request.store_id,
-            product_id=request.product_id,
-            forecast=forecast_items,
-            model_name="Holt-Winters (Fine-Tuned)",
-            evaluation_mape=0.18,
-        )
+        return run_inference(request=payload, model_bundle=bundle)
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.error("Inference error: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Inference failed.") from exc

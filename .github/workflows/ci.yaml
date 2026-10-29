@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main, "feature/**" ]
+    branches: [ main, "feature/**", "abhav" ]
   pull_request:
     branches: [ main ]
 
@@ -31,6 +31,10 @@ jobs:
           pip install flake8 black pytest pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -e .
+          # Install API serving stack
+          pip install fastapi "uvicorn[standard]" pydantic joblib statsmodels httpx pytest-asyncio
+          # Install frontend dependencies (required by apps/app.py and tests/test_frontend.py)
+          pip install plotly streamlit
 
       - name: Check formatting with Black
         run: |
@@ -38,9 +42,9 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          # stop the build if there are Python syntax errors or undefined names
+          # Stop on syntax errors or undefined names
           flake8 src/ tests/ apps/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. Max line length 120
+          # Warnings only for style issues
           flake8 src/ tests/ apps/ --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
       - name: Run unit tests with Pytest
