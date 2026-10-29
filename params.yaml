@@ -3,9 +3,11 @@
 
 paths:
   raw_data: Data/sales_data.csv
+  clean_data: Data/interim/clean.parquet
   processed_dir: Data/processed
   train_data: Data/processed/train.parquet
   test_data: Data/processed/test.parquet
+  category_maps: Data/processed/category_maps.json
 
 # Input dataset contract
 data:
@@ -16,12 +18,33 @@ data:
   group_cols: ["Store ID", "Product ID", "Category", "Region"]
   test_ratio: 0.2
 
+# Expected raw columns and their types for validation
+schema:
+  date: [Date]
+  string: [Store ID, Product ID, Category, Region, Weather Condition, Seasonality]
+  numeric: [Inventory Level, Units Sold, Units Ordered, Price, Discount, Promotion,
+            Competitor Pricing, Epidemic, Demand]
+
 # Preprocessing settings
 preprocess:
   ffill_cols: [Demand]
   log1p_cols: [Demand]
   max_null_fraction: 0.05
   require_continuous_dates: true
+
+# Feature engineering parameters
+features:
+  test_ratio: 0.2
+  train_cutoff_date: null
+  target_col: Demand_log1p
+  calendar: [day, month, week, dayofweek, year, quarter, is_weekend]
+  lag_cols: [Demand_log1p, Units Sold, Inventory Level, Price]
+  lag_days: [1, 7]
+  rolling_cols: [Demand_log1p]
+  rolling_windows: [7, 14, 28]
+  rolling_stats: [mean, std]
+  categorical_features: [Weather Condition, Seasonality]
+  drop_cols: [Demand, Units Sold, Units Ordered, Inventory Level]
 
 # Model tuning settings used by the Holt-Winters stage
 model:
