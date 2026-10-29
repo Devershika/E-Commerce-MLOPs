@@ -278,7 +278,7 @@ def main():
         height=480,
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Forecast Data Table & Export
     col_left, col_right = st.columns([1, 1])
@@ -288,7 +288,7 @@ def main():
         display_fc = forecast_df.copy()
         display_fc["date"] = display_fc["date"].dt.strftime("%Y-%m-%d")
         display_fc.columns = ["Date", "Predicted Demand (Units)"]
-        st.dataframe(display_fc, use_container_width=True, height=280)
+        st.dataframe(display_fc, width="stretch", height=280)
 
     with col_right:
         st.subheader("📊 Demand Statistics & Inventory Advice")
