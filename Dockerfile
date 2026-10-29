@@ -1,6 +1,6 @@
 # Multi-stage production Dockerfile for Demand Forecasting FastAPI service
 
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
@@ -33,12 +33,13 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy application source code and models
+# Copy application source code, models, and packaging metadata
+COPY pyproject.toml README.md /app/
 COPY src/ /app/src/
 COPY models/ /app/models/
 COPY apps/ /app/apps/
 
-RUN pip install --no-cache-dir -e /app
+RUN pip install --no-cache-dir --no-deps -e /app
 
 # Set non-root permissions
 RUN chown -R appuser:appuser /app
