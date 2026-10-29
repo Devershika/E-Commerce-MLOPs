@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: demand-forecast-api:latest
+    container_name: demand_forecast_service
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - MODEL_PATH=/app/models/holt_winters_model.joblib
+    restart: always
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
